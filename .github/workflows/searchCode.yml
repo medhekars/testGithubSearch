@@ -24,7 +24,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
         run: |
           node -e " \
-            const { GraphQLClient, gql } = require('graphql-request'); \
+            const { GraphQLClient, gql } = require('graphql'); \
             const client = new GraphQLClient('https://api.github.com/graphql', { \
               headers: { \
                 authorization: 'Bearer $GITHUB_TOKEN', \
