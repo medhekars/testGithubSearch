@@ -1,40 +1,51 @@
-name: Search Code in GitHub Repository
+name: Search Code in Organization Repositories
 
 on:
   workflow_dispatch:
-    inputs:
-      repository:
-        description: 'Name of the repository'
-        required: true
-      search_query:
-        description: 'Code to search for'
-        required: true
 
 jobs:
-  search-code:
+  search_code:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Search Code
-        uses: actions/github-script@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          script: |
-            const response = await github.graphql(`
-              query ($repo: String!, $searchQuery: String!) {
-                repository(name: $repo) {
-                  object(expression: "main") {
-                    ... on Commit {
-                      history(path: $searchQuery, first: 10) {
-                        nodes {
-                          oid
-                          message
-                        }
-                      }
-                    }
-                  }
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install @actions/core @actions/http-client
+
+      - name: Browse organization repositories
+        id: browse_repos
+        run: |
+          process.env.REPO_LIST = ["testGithubSearch"];
+          
+      - name: Search code in repositories
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_LIST: ${{ env.REPO_LIST }}
+        run: |
+          const core = require('@actions/core');
+          const { HttpClient } = require('@actions/http-client');
+
+          const token = process.env.GITHUB_TOKEN;
+          const repoList = JSON.parse(process.env.REPO_LIST);
+          const searchQuery = 'forwarder';
+
+          for (const repo of repoList) {
+            const httpClient = new HttpClient('search-code-action');
+            const response = await httpClient.get(
+              `https://api.github.com/search/code?q=${encodeURIComponent(searchQuery)}+repo:${repo}`,
+              {
+                headers: {
+                  Authorization: `token ${token}`,
+                  'User-Agent': 'search-code-action'
                 }
               }
-            `, {
-              repo: ${{ github.event.inputs.repository }},
-              searchQuery: ${{ github.event.inputs.search_query }}
-            });
-            console.log(response);
+            );
+            
+            const responseBody = await response.readBody();
+            const searchResults = JSON.parse(responseBody);
+            console.log(`Search results in ${repo}:`, searchResults);
+          }
