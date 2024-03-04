@@ -19,7 +19,7 @@ jobs:
       - name: Browse organization repositories
         id: browse_repos
         run: |
-          process.env.REPO_LIST = ["testGithubSearch"];
+          echo "REPO_LIST=['testGithubSearch']" >> GITHUB_ENV
           
       - name: Search code in repositories
         env:
