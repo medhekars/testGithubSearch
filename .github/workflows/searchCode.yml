@@ -43,7 +43,8 @@ jobs:
                   'User-Agent': 'search-code-action'
                 }
               }
-            );
+            )
+           }
             
             const responseBody = await response.readBody();
             const searchResults = JSON.parse(responseBody);
