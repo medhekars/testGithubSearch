@@ -3,9 +3,6 @@ name: Search Code in GitHub Repository
 on:
   workflow_dispatch:
     inputs:
-      owner:
-        description: 'Owner of the repository'
-        required: true
       repository:
         description: 'Name of the repository'
         required: true
@@ -37,7 +34,6 @@ jobs:
                 }
               }
             `, {
-              owner: ${{ github.event.inputs.owner }},
               repo: ${{ github.event.inputs.repository }},
               searchQuery: ${{ github.event.inputs.search_query }}
             });
