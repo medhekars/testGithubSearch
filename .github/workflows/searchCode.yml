@@ -17,15 +17,28 @@ jobs:
   search-code:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - name: Search Code
-        run: |
-          curl -X POST -H "Authorization: Bearer ${{ secrets.PAT_GITHUB_TOKEN }}" -d '{
-            "query": "query { search(query: \"repo:$owner/$repository $search_query\", type: CODE, first: 10) { nodes { ... on SearchItem { ... on Code { name path } } } } }"
-          }' https://api.github.com/graphql
-        env:
-          owner: ${{ github.event.inputs.owner }}
-          repository: ${{ github.event.inputs.repository }}
-          search_query: ${{ github.event.inputs.search_query }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const response = await github.graphql(`
+              query ($owner: String!, $repo: String!, $searchQuery: String!) {
+                repository(owner: $owner, name: $repo) {
+                  object(expression: "master") {
+                    ... on Commit {
+                      history(path: $searchQuery, first: 10) {
+                        nodes {
+                          oid
+                          message
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `, {
+              owner: ${{ github.event.inputs.owner }},
+              repo: ${{ github.event.inputs.repository }},
+              searchQuery: ${{ github.event.inputs.search_query }}
+            });
+            console.log(response);
