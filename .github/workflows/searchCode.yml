@@ -22,9 +22,9 @@ jobs:
         with:
           script: |
             const response = await github.graphql(`
-              query ($owner: String!, $repo: String!, $searchQuery: String!) {
-                repository(owner: $owner, name: $repo) {
-                  object(expression: "master") {
+              query ($repo: String!, $searchQuery: String!) {
+                repository(name: $repo) {
+                  object(expression: "main") {
                     ... on Commit {
                       history(path: $searchQuery, first: 10) {
                         nodes {
