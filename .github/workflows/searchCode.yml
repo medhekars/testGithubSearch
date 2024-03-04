@@ -48,4 +48,3 @@ jobs:
             const responseBody = await response.readBody();
             const searchResults = JSON.parse(responseBody);
             console.log(`Search results in ${repo}:`, searchResults);
-          }
