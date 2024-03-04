@@ -1,0 +1,56 @@
+name: Search Code in Organization
+
+on:
+  workflow_dispatch:
+
+jobs:
+  search_code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install graphql-request
+
+      - name: Run GraphQL query
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
+        run: |
+          node -e " \
+            const { GraphQLClient, gql } = require('graphql-request'); \
+            const client = new GraphQLClient('https://api.github.com/graphql', { \
+              headers: { \
+                authorization: 'Bearer $GITHUB_TOKEN', \
+              }, \
+            }); \
+            const query = gql\` \
+              query { \
+                search(query: \"log-forwarder-version\", type: REPOSITORY, first: 10) { \
+                  edges { \
+                    node { \
+                      ... on Repository { \
+                        name \
+                        owner { \
+                          login \
+                        } \
+                        object(expression: \"master: . \") { \
+                          ... on Blob { \
+                            text \
+                          } \
+                        } \
+                        url \
+                      } \
+                    } \
+                  } \
+                } \
+              } \
+            \`; \
+            client.request(query).then(data => console.log(JSON.stringify(data))); \
+          "
