@@ -33,6 +33,7 @@ jobs:
           const repoList = JSON.parse(process.env.REPO_LIST);
           const searchQuery = "forwarder";
 
+          const repo = "testGithubSearch"
           const response = await httpClient.get(
              `https://api.github.com/search/code?q=${encodeURIComponent(searchQuery)}+repo:${repo}`,
              {
