@@ -23,7 +23,7 @@ jobs:
           
       - name: Search code in repositories
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
           REPO_LIST: ${{ env.REPO_LIST }}
         run: |
           const core = require('@actions/core');
