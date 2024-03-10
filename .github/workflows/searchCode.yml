@@ -31,7 +31,7 @@ jobs:
 
           const token = process.env.GITHUB_TOKEN;
           const repoList = JSON.parse(process.env.REPO_LIST);
-          const searchQuery = 'forwarder';
+          const searchQuery = "forwarder";
 
           for (const repo of repoList) {
             const httpClient = new HttpClient('search-code-action')
@@ -39,7 +39,7 @@ jobs:
               `https://api.github.com/search/code?q=${encodeURIComponent(searchQuery)}+repo:${repo}`,
               {
                 headers: {
-                  "Authorization: ${{ secrets.PAT_GITHUB_TOKEN }}",
+                  "Authorization: Bearer ${{ secrets.PAT_GITHUB_TOKEN }}",
                   'User-Agent': 'search-code-action'
                 }
               }
