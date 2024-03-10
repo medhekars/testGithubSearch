@@ -34,7 +34,6 @@ jobs:
           const searchQuery = "forwarder";
 
           for (const repo of repoList) {
-            const httpClient = new HttpClient('search-code-action');
             const response = await httpClient.get(
               `https://api.github.com/search/code?q=${encodeURIComponent(searchQuery)}+repo:${repo}`,
               {
